@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Malla Interactiva Medicina Veterinaria UC</title>
+<style>
+  body {
+    font-family: 'Arial', sans-serif;
+    background: #fbf8ff;
+    color: #333;
+  }
+  h1 { text-align: center; color: #8a4fff; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    padding: 20px;
+  }
+  .course {
+    background: #f5e9ff;
+    border: 2px solid #d7bfff;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.3s;
+    position: relative;
+  }
+  .course.locked {
+    background: #eee;
+    color: #999;
+    cursor: not-allowed;
+  }
+  .course.completed {
+    background: #b8f0de;
+    border-color: #61cfa0;
+    text-decoration: line-through;
+  }
+  .tooltip {
+    position: absolute;
+    bottom: 110%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.2s;
+  }
+  .course.locked:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+  }
+</style>
+</head>
+<body>
+
+<h1>Malla Interactiva Medicina Veterinaria UC</h1>
+
+<div class="grid" id="grid"></div>
+
+<script>
+  // Plan simplificado por semestre (basado en la malla real) :contentReference[oaicite:2]{index=2}
+  const courses = [
+    { id: 'VET0010', name: 'Introducción a la Medicina Vet.', prereqs: [] },
+    { id: 'VET0110', name: 'Anatomía I', prereqs: ['VET0010'] },
+    { id: 'VET0120', name: 'Anatomía II', prereqs: ['VET0110'] },
+    { id: 'VET1130', name: 'Fisiopatología', prereqs: ['VET0120'] },
+    { id: 'VET1140', name: 'Patología I', prereqs: ['VET1130'] },
+    { id: 'VET1160', name: 'Farmacología & Tox.', prereqs: ['VET1130'] },
+    { id: 'VET1800', name: 'Semiología y Métodos Diagn.', prereqs: ['VET1140'] },
+    { id: 'VET1830', name: 'Imagenología Vet.', prereqs: ['VET1800'] },
+    { id: 'VET2830', name: 'Medicina Interna I', prereqs: ['VET1800'] },
+    { id: 'VET2820', name: 'Medicina Interna II', prereqs: ['VET2830'] },
+    { id: 'VET2850', name: 'Internado Caninos/Felinos', prereqs: ['VET2820'] }
+  ];
+
+  const grid = document.getElementById('grid');
+
+  // Load saved data
+  const saved = JSON.parse(localStorage.getItem('completedVet') || '[]');
+
+  function isUnlocked(course) {
+    return course.prereqs.every(r => saved.includes(r));
+  }
+
+  function toggleComplete(id) {
+    if (!saved.includes(id)) {
+      saved.push(id);
+    } else {
+      const i = saved.indexOf(id);
+      saved.splice(i, 1);
+    }
+    localStorage.setItem('completedVet', JSON.stringify(saved));
+    render();
+  }
+
+  function render() {
+    grid.innerHTML = '';
+    courses.forEach(c => {
+      const div = document.createElement('div');
+      div.classList.add('course');
+      const unlocked = isUnlocked(c);
+      const done = saved.includes(c.id);
+
+      if (!unlocked) div.classList.add('locked');
+      if (done) div.classList.add('completed');
+
+      div.textContent = c.name;
+
+      if (!unlocked) {
+        const missing = c.prereqs.filter(r => !saved.includes(r)).join(', ');
+        const tt = document.createElement('span');
+        tt.classList.add('tooltip');
+        tt.textContent = `Falta: ${missing}`;
+        div.appendChild(tt);
+      }
+
+      div.onclick = () => {
+        if (unlocked) toggleComplete(c.id);
+      };
+
+      grid.appendChild(div);
+    });
+  }
+
+  render();
+</script>
+
+</body>
+</html>
