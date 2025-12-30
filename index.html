@@ -1,188 +1,195 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8">
 <title>Malla Medicina Veterinaria UC</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
 <style>
-body {
-  font-family: 'Poppins', sans-serif;
-  background: linear-gradient(120deg, #fbeaff, #e0f7fa);
-  margin: 0;
-  padding: 20px;
+body{
+  font-family:'Poppins',sans-serif;
+  background:linear-gradient(135deg,#fde4ff,#e0f7fa);
+  margin:0;
+  padding:20px;
 }
 
-h1 {
-  text-align: center;
-  color: #6a1b9a;
-  margin-bottom: 30px;
+h1{
+  text-align:center;
+  color:#6a1b9a;
+  margin-bottom:30px;
 }
 
-.malla {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 16px;
+.malla{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:20px;
 }
 
-.anio {
-  background: rgba(255,255,255,0.7);
-  border-radius: 16px;
-  padding: 12px;
+.anio{
+  background:#ffffffcc;
+  border-radius:18px;
+  padding:14px;
 }
 
-.anio h2 {
-  text-align: center;
-  color: #8e24aa;
-  font-size: 18px;
+.anio h2{
+  text-align:center;
+  color:#8e24aa;
+  font-size:18px;
+  margin-bottom:10px;
 }
 
-.semestre {
-  margin-bottom: 14px;
+.semestre{
+  background:#f3e5f5;
+  border-radius:14px;
+  padding:10px;
+  margin-bottom:12px;
 }
 
-.semestre h3 {
-  font-size: 14px;
-  color: #00838f;
-  margin-bottom: 6px;
+.semestre h3{
+  font-size:14px;
+  color:#00838f;
+  margin-bottom:8px;
+  text-align:center;
 }
 
-.ramo {
-  background: #f3e5f5;
-  border-radius: 10px;
-  padding: 8px;
-  margin-bottom: 6px;
-  font-size: 12px;
-  cursor: pointer;
-  position: relative;
-  transition: 0.2s;
+.ramo{
+  background:#ede7f6;
+  border-radius:10px;
+  padding:8px;
+  margin-bottom:6px;
+  font-size:12px;
+  cursor:pointer;
+  transition:0.2s;
+  position:relative;
 }
 
-.ramo:hover {
-  transform: scale(1.02);
+.ramo:hover{transform:scale(1.03);}
+
+.ramo.aprobado{
+  background:#c8e6c9;
+  text-decoration:line-through;
 }
 
-.ramo.aprobado {
-  background: #c8e6c9;
-  text-decoration: line-through;
+.ramo.bloqueado{
+  background:#eeeeee;
+  color:#888;
+  cursor:not-allowed;
 }
 
-.ramo.bloqueado {
-  background: #eeeeee;
-  color: #888;
-  cursor: not-allowed;
+.tooltip{
+  display:none;
+  position:absolute;
+  bottom:110%;
+  left:50%;
+  transform:translateX(-50%);
+  background:#6a1b9a;
+  color:white;
+  padding:6px;
+  border-radius:8px;
+  font-size:11px;
+  width:180px;
+  z-index:10;
 }
 
-.tooltip {
-  display: none;
-  position: absolute;
-  bottom: 110%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #6a1b9a;
-  color: white;
-  padding: 6px;
-  border-radius: 8px;
-  font-size: 11px;
-  width: 180px;
-  z-index: 10;
-}
-
-.ramo.bloqueado:hover .tooltip {
-  display: block;
+.ramo.bloqueado:hover .tooltip{
+  display:block;
 }
 </style>
 </head>
-<body>
 
-<h1>Malla Interactiva Medicina Veterinaria UC</h1>
+<body>
+<h1>Malla Interactiva – Medicina Veterinaria UC</h1>
 
 <div class="malla" id="malla"></div>
 
 <script>
-const ramos = {
-  "VET0010": {nombre:"Introducción a la Medicina Veterinaria", req:[]},
-  "QUIM201M": {nombre:"Química", req:[]},
-  "MAT1023": {nombre:"Cálculo", req:[]},
-  "FIS119V": {nombre:"Física Biomédica", req:[]},
-  "FIL2001": {nombre:"Filosofía", req:[]},
-  "VET0140": {nombre:"Biología y Diversidad Animal", req:[]},
+const data = [
+{
+  anio:"Primer Año",
+  semestres:[
+    {nombre:"Semestre 1", ramos:[
+      ["VET0010","Introducción a la Medicina Veterinaria",[]],
+      ["QUIM201M","Química",[]],
+      ["MAT1023","Cálculo",[]],
+      ["FIS119V","Física Biomédica",[]],
+      ["FIL2001","Filosofía",[]],
+      ["VET0140","Biología y Diversidad Animal",[]]
+    ]},
+    {nombre:"Semestre 2", ramos:[
+      ["VET0110","Anatomía Vet. I",["VET0140"]],
+      ["BIO239M","Biología Molecular",["QUIM201M"]],
+      ["VET0100","Histología y Embriología",[]],
+      ["VET0130","Bioestadística",["MAT1023"]],
+      ["VET0020","Ética Veterinaria",[]],
+      ["ELECTIVO","Electivo Formación General",[]]
+    ]}
+  ]
+},
+{
+  anio:"Segundo Año",
+  semestres:[
+    {nombre:"Semestre 3", ramos:[
+      ["VET0120","Anatomía Vet. II",["VET0110"]],
+      ["VET1100","Fisiología Animal",["BIO239M","VET0100","FIS119V"]],
+      ["VET1400","Ecología Veterinaria",["VET0140"]],
+      ["VET0500","Etología y Bienestar Animal",["VET0140"]],
+      ["ELECTIVO","Electivo Formación General",[]]
+    ]},
+    {nombre:"Semestre 4", ramos:[
+      ["VET1110","Microbiología e Inmunología",["BIO239M"]],
+      ["VET1130","Fisiopatología",["VET1100"]],
+      ["VET1120","Genética y Evolución",["BIO239M","VET0130"]],
+      ["VET0510","Manejo Animal",["VET0500","VET0120","VET0020"]],
+      ["ELECTIVO","Electivo Formación General",[]],
+      ["ELECTIVO2","Electivo Formación General",[]]
+    ]}
+  ]
+}
+];
 
-  "VET0110": {nombre:"Anatomía Vet. I", req:["VET0140"]},
-  "BIO239M": {nombre:"Biología Molecular", req:["QUIM201M"]},
-  "VET0100": {nombre:"Histología y Embriología", req:[]},
-  "VET0130": {nombre:"Bioestadística", req:["MAT1023"]},
-  "VET0020": {nombre:"Ética Veterinaria", req:[]},
+const aprobados = JSON.parse(localStorage.getItem("aprobados")||"[]");
 
-  "VET0120": {nombre:"Anatomía Vet. II", req:["VET0110"]},
-  "VET1100": {nombre:"Fisiología Animal", req:["BIO239M","VET0100","FIS119V"]},
-  "VET1400": {nombre:"Ecología Veterinaria", req:["VET0140"]},
-  "VET0500": {nombre:"Etología y Bienestar Animal", req:["VET0140"]},
+function crearRamo([cod,nombre,req]){
+  const d=document.createElement("div");
+  d.className="ramo";
+  d.innerHTML=`<strong>${nombre}</strong><br>${cod}`;
+  const faltan=req.filter(r=>!aprobados.includes(r));
 
-  "VET1110": {nombre:"Microbiología e Inmunología", req:["BIO239M"]},
-  "VET1130": {nombre:"Fisiopatología", req:["VET1100"]},
-  "VET1120": {nombre:"Genética y Evolución", req:["BIO239M","VET0130"]},
-  "VET0510": {nombre:"Manejo Animal", req:["VET0500","VET0120","VET0020"]},
-
-  "VET1140": {nombre:"Enfermedades Parasitarias", req:["VET1110","VET1130"]},
-  "VET1150": {nombre:"Patología General", req:["VET1100","VET0120","VET1130"]},
-  "AGZ341": {nombre:"Nutrición Animal", req:["VET1100","VET1120"]},
-  "AGZ331": {nombre:"Alimentos para Animales", req:["VET1100","VET1120"]},
-
-  "VET1160": {nombre:"Enfermedades Infecciosas", req:["VET1110","VET1150"]},
-  "VET1180": {nombre:"Farmacología", req:["VET0130","VET1130"]},
-  "VET1170": {nombre:"Reproducción Animal", req:["VET1150"]},
-
-  "VET1800": {nombre:"Semiología", req:["VET0120","VET0510"]},
-  "VET1810": {nombre:"Patología Clínica", req:["VET1130","VET1160","VET1140"]},
-  "VET1190": {nombre:"Ginecología y Obstetricia", req:["VET1170"]},
-  "VET1600": {nombre:"Salud Pública", req:["VET0130"]},
-  "VET1300": {nombre:"Producción Monogástricos", req:["VET1120","AGZ341","AGZ331"]},
-
-  "VET1830": {nombre:"Medicina Interna I", req:["VET1800","VET1810","VET1180"]},
-  "VET2820": {nombre:"Imagenología", req:["VET1800"]},
-  "VET1310": {nombre:"Producción Rumiantes", req:["VET1120","VET1300","AGZ341","AGZ331"]},
-  "VET1000": {nombre:"Economía Veterinaria", req:["VET0130"]},
-
-  "VET2830": {nombre:"Medicina Interna II", req:["VET1830"]},
-  "VET2800": {nombre:"Cirugía y Anestesia", req:["VET1830","VET1810"]},
-  "VET2000": {nombre:"Evaluación de Proyectos", req:["VET1000","VET1310"]},
-
-  "VET1700": {nombre:"Calidad e Inocuidad", req:["VET1600"]},
-  "VET2810": {nombre:"Cirugía Avanzada", req:["VET2800"]}
-};
-
-const aprobados = JSON.parse(localStorage.getItem("aprobados") || "[]");
-
-function crearRamo(codigo) {
-  const r = ramos[codigo];
-  const div = document.createElement("div");
-  div.className = "ramo";
-  div.innerHTML = `<strong>${r.nombre}</strong><br>${codigo}`;
-
-  const faltantes = r.req.filter(x => !aprobados.includes(x));
-  if (faltantes.length > 0) {
-    div.classList.add("bloqueado");
-    const tip = document.createElement("div");
-    tip.className = "tooltip";
-    tip.innerText = "Falta aprobar: " + faltantes.join(", ");
-    div.appendChild(tip);
-  } else {
-    if (aprobados.includes(codigo)) div.classList.add("aprobado");
-    div.onclick = () => toggle(codigo);
+  if(req.length && faltan.length){
+    d.classList.add("bloqueado");
+    const t=document.createElement("div");
+    t.className="tooltip";
+    t.innerText="Falta aprobar: "+faltan.join(", ");
+    d.appendChild(t);
+  }else{
+    if(aprobados.includes(cod)) d.classList.add("aprobado");
+    d.onclick=()=>{
+      if(aprobados.includes(cod))
+        aprobados.splice(aprobados.indexOf(cod),1);
+      else aprobados.push(cod);
+      localStorage.setItem("aprobados",JSON.stringify(aprobados));
+      location.reload();
+    }
   }
-  return div;
+  return d;
 }
 
-function toggle(codigo) {
-  const i = aprobados.indexOf(codigo);
-  if (i >= 0) aprobados.splice(i,1);
-  else aprobados.push(codigo);
-  localStorage.setItem("aprobados", JSON.stringify(aprobados));
-  location.reload();
-}
+const cont=document.getElementById("malla");
 
-const malla = document.getElementById("malla");
-Object.keys(ramos).forEach(c => malla.appendChild(crearRamo(c)));
+data.forEach(a=>{
+  const anio=document.createElement("div");
+  anio.className="anio";
+  anio.innerHTML=`<h2>${a.anio}</h2>`;
+  a.semestres.forEach(s=>{
+    const sem=document.createElement("div");
+    sem.className="semestre";
+    sem.innerHTML=`<h3>${s.nombre}</h3>`;
+    s.ramos.forEach(r=>sem.appendChild(crearRamo(r)));
+    anio.appendChild(sem);
+  });
+  cont.appendChild(anio);
+});
 </script>
 
 </body>
