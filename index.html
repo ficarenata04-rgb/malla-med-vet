@@ -1,134 +1,188 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Malla Interactiva Medicina Veterinaria UC</title>
+<meta charset="UTF-8" />
+<title>Malla Medicina Veterinaria UC</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
-  body {
-    font-family: 'Arial', sans-serif;
-    background: #fbf8ff;
-    color: #333;
-  }
-  h1 { text-align: center; color: #8a4fff; }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 10px;
-    padding: 20px;
-  }
-  .course {
-    background: #f5e9ff;
-    border: 2px solid #d7bfff;
-    border-radius: 8px;
-    padding: 10px;
-    text-align: center;
-    cursor: pointer;
-    transition: 0.3s;
-    position: relative;
-  }
-  .course.locked {
-    background: #eee;
-    color: #999;
-    cursor: not-allowed;
-  }
-  .course.completed {
-    background: #b8f0de;
-    border-color: #61cfa0;
-    text-decoration: line-through;
-  }
-  .tooltip {
-    position: absolute;
-    bottom: 110%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #333;
-    color: #fff;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 12px;
-    white-space: nowrap;
-    visibility: hidden;
-    opacity: 0;
-    transition: 0.2s;
-  }
-  .course.locked:hover .tooltip {
-    visibility: visible;
-    opacity: 1;
-  }
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(120deg, #fbeaff, #e0f7fa);
+  margin: 0;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  color: #6a1b9a;
+  margin-bottom: 30px;
+}
+
+.malla {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+}
+
+.anio {
+  background: rgba(255,255,255,0.7);
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.anio h2 {
+  text-align: center;
+  color: #8e24aa;
+  font-size: 18px;
+}
+
+.semestre {
+  margin-bottom: 14px;
+}
+
+.semestre h3 {
+  font-size: 14px;
+  color: #00838f;
+  margin-bottom: 6px;
+}
+
+.ramo {
+  background: #f3e5f5;
+  border-radius: 10px;
+  padding: 8px;
+  margin-bottom: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  position: relative;
+  transition: 0.2s;
+}
+
+.ramo:hover {
+  transform: scale(1.02);
+}
+
+.ramo.aprobado {
+  background: #c8e6c9;
+  text-decoration: line-through;
+}
+
+.ramo.bloqueado {
+  background: #eeeeee;
+  color: #888;
+  cursor: not-allowed;
+}
+
+.tooltip {
+  display: none;
+  position: absolute;
+  bottom: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #6a1b9a;
+  color: white;
+  padding: 6px;
+  border-radius: 8px;
+  font-size: 11px;
+  width: 180px;
+  z-index: 10;
+}
+
+.ramo.bloqueado:hover .tooltip {
+  display: block;
+}
 </style>
 </head>
 <body>
 
 <h1>Malla Interactiva Medicina Veterinaria UC</h1>
 
-<div class="grid" id="grid"></div>
+<div class="malla" id="malla"></div>
 
 <script>
-  // Plan simplificado por semestre (basado en la malla real) :contentReference[oaicite:2]{index=2}
-  const courses = [
-    { id: 'VET0010', name: 'Introducción a la Medicina Vet.', prereqs: [] },
-    { id: 'VET0110', name: 'Anatomía I', prereqs: ['VET0010'] },
-    { id: 'VET0120', name: 'Anatomía II', prereqs: ['VET0110'] },
-    { id: 'VET1130', name: 'Fisiopatología', prereqs: ['VET0120'] },
-    { id: 'VET1140', name: 'Patología I', prereqs: ['VET1130'] },
-    { id: 'VET1160', name: 'Farmacología & Tox.', prereqs: ['VET1130'] },
-    { id: 'VET1800', name: 'Semiología y Métodos Diagn.', prereqs: ['VET1140'] },
-    { id: 'VET1830', name: 'Imagenología Vet.', prereqs: ['VET1800'] },
-    { id: 'VET2830', name: 'Medicina Interna I', prereqs: ['VET1800'] },
-    { id: 'VET2820', name: 'Medicina Interna II', prereqs: ['VET2830'] },
-    { id: 'VET2850', name: 'Internado Caninos/Felinos', prereqs: ['VET2820'] }
-  ];
+const ramos = {
+  "VET0010": {nombre:"Introducción a la Medicina Veterinaria", req:[]},
+  "QUIM201M": {nombre:"Química", req:[]},
+  "MAT1023": {nombre:"Cálculo", req:[]},
+  "FIS119V": {nombre:"Física Biomédica", req:[]},
+  "FIL2001": {nombre:"Filosofía", req:[]},
+  "VET0140": {nombre:"Biología y Diversidad Animal", req:[]},
 
-  const grid = document.getElementById('grid');
+  "VET0110": {nombre:"Anatomía Vet. I", req:["VET0140"]},
+  "BIO239M": {nombre:"Biología Molecular", req:["QUIM201M"]},
+  "VET0100": {nombre:"Histología y Embriología", req:[]},
+  "VET0130": {nombre:"Bioestadística", req:["MAT1023"]},
+  "VET0020": {nombre:"Ética Veterinaria", req:[]},
 
-  // Load saved data
-  const saved = JSON.parse(localStorage.getItem('completedVet') || '[]');
+  "VET0120": {nombre:"Anatomía Vet. II", req:["VET0110"]},
+  "VET1100": {nombre:"Fisiología Animal", req:["BIO239M","VET0100","FIS119V"]},
+  "VET1400": {nombre:"Ecología Veterinaria", req:["VET0140"]},
+  "VET0500": {nombre:"Etología y Bienestar Animal", req:["VET0140"]},
 
-  function isUnlocked(course) {
-    return course.prereqs.every(r => saved.includes(r));
+  "VET1110": {nombre:"Microbiología e Inmunología", req:["BIO239M"]},
+  "VET1130": {nombre:"Fisiopatología", req:["VET1100"]},
+  "VET1120": {nombre:"Genética y Evolución", req:["BIO239M","VET0130"]},
+  "VET0510": {nombre:"Manejo Animal", req:["VET0500","VET0120","VET0020"]},
+
+  "VET1140": {nombre:"Enfermedades Parasitarias", req:["VET1110","VET1130"]},
+  "VET1150": {nombre:"Patología General", req:["VET1100","VET0120","VET1130"]},
+  "AGZ341": {nombre:"Nutrición Animal", req:["VET1100","VET1120"]},
+  "AGZ331": {nombre:"Alimentos para Animales", req:["VET1100","VET1120"]},
+
+  "VET1160": {nombre:"Enfermedades Infecciosas", req:["VET1110","VET1150"]},
+  "VET1180": {nombre:"Farmacología", req:["VET0130","VET1130"]},
+  "VET1170": {nombre:"Reproducción Animal", req:["VET1150"]},
+
+  "VET1800": {nombre:"Semiología", req:["VET0120","VET0510"]},
+  "VET1810": {nombre:"Patología Clínica", req:["VET1130","VET1160","VET1140"]},
+  "VET1190": {nombre:"Ginecología y Obstetricia", req:["VET1170"]},
+  "VET1600": {nombre:"Salud Pública", req:["VET0130"]},
+  "VET1300": {nombre:"Producción Monogástricos", req:["VET1120","AGZ341","AGZ331"]},
+
+  "VET1830": {nombre:"Medicina Interna I", req:["VET1800","VET1810","VET1180"]},
+  "VET2820": {nombre:"Imagenología", req:["VET1800"]},
+  "VET1310": {nombre:"Producción Rumiantes", req:["VET1120","VET1300","AGZ341","AGZ331"]},
+  "VET1000": {nombre:"Economía Veterinaria", req:["VET0130"]},
+
+  "VET2830": {nombre:"Medicina Interna II", req:["VET1830"]},
+  "VET2800": {nombre:"Cirugía y Anestesia", req:["VET1830","VET1810"]},
+  "VET2000": {nombre:"Evaluación de Proyectos", req:["VET1000","VET1310"]},
+
+  "VET1700": {nombre:"Calidad e Inocuidad", req:["VET1600"]},
+  "VET2810": {nombre:"Cirugía Avanzada", req:["VET2800"]}
+};
+
+const aprobados = JSON.parse(localStorage.getItem("aprobados") || "[]");
+
+function crearRamo(codigo) {
+  const r = ramos[codigo];
+  const div = document.createElement("div");
+  div.className = "ramo";
+  div.innerHTML = `<strong>${r.nombre}</strong><br>${codigo}`;
+
+  const faltantes = r.req.filter(x => !aprobados.includes(x));
+  if (faltantes.length > 0) {
+    div.classList.add("bloqueado");
+    const tip = document.createElement("div");
+    tip.className = "tooltip";
+    tip.innerText = "Falta aprobar: " + faltantes.join(", ");
+    div.appendChild(tip);
+  } else {
+    if (aprobados.includes(codigo)) div.classList.add("aprobado");
+    div.onclick = () => toggle(codigo);
   }
+  return div;
+}
 
-  function toggleComplete(id) {
-    if (!saved.includes(id)) {
-      saved.push(id);
-    } else {
-      const i = saved.indexOf(id);
-      saved.splice(i, 1);
-    }
-    localStorage.setItem('completedVet', JSON.stringify(saved));
-    render();
-  }
+function toggle(codigo) {
+  const i = aprobados.indexOf(codigo);
+  if (i >= 0) aprobados.splice(i,1);
+  else aprobados.push(codigo);
+  localStorage.setItem("aprobados", JSON.stringify(aprobados));
+  location.reload();
+}
 
-  function render() {
-    grid.innerHTML = '';
-    courses.forEach(c => {
-      const div = document.createElement('div');
-      div.classList.add('course');
-      const unlocked = isUnlocked(c);
-      const done = saved.includes(c.id);
-
-      if (!unlocked) div.classList.add('locked');
-      if (done) div.classList.add('completed');
-
-      div.textContent = c.name;
-
-      if (!unlocked) {
-        const missing = c.prereqs.filter(r => !saved.includes(r)).join(', ');
-        const tt = document.createElement('span');
-        tt.classList.add('tooltip');
-        tt.textContent = `Falta: ${missing}`;
-        div.appendChild(tt);
-      }
-
-      div.onclick = () => {
-        if (unlocked) toggleComplete(c.id);
-      };
-
-      grid.appendChild(div);
-    });
-  }
-
-  render();
+const malla = document.getElementById("malla");
+Object.keys(ramos).forEach(c => malla.appendChild(crearRamo(c)));
 </script>
 
 </body>
